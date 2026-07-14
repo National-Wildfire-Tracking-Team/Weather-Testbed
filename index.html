@@ -3,46 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather Testbed — Map Test</title>
+    <title>Weather Testbed — Mapbox Map Test</title>
 
     <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css"
       rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="app-header">
       <h1>Weather Testbed</h1>
-      <p class="subtitle">Simple map test — Leaflet base map with optional weather overlays</p>
+      <p class="subtitle">Simple map test — powered by Mapbox GL JS</p>
     </header>
 
     <div id="map"></div>
 
     <aside class="panel">
-      <h2>Layers</h2>
-      <label class="layer-toggle">
-        <input type="checkbox" id="toggle-clouds" />
-        <span>Clouds</span>
-      </label>
-      <label class="layer-toggle">
-        <input type="checkbox" id="toggle-precipitation" />
-        <span>Precipitation</span>
-      </label>
-      <label class="layer-toggle">
-        <input type="checkbox" id="toggle-temp" />
-        <span>Temperature</span>
-      </label>
-      <label class="layer-toggle">
-        <input type="checkbox" id="toggle-wind" />
-        <span>Wind</span>
+      <h2>Map style</h2>
+      <label class="field">
+        <select id="style-select">
+          <option value="mapbox://styles/mapbox/satellite-streets-v12">
+            Satellite Streets
+          </option>
+          <option value="mapbox://styles/mapbox/outdoors-v12" selected>
+            Outdoors
+          </option>
+          <option value="mapbox://styles/mapbox/streets-v12">Streets</option>
+          <option value="mapbox://styles/mapbox/dark-v11">Dark</option>
+          <option value="mapbox://styles/mapbox/light-v11">Light</option>
+        </select>
       </label>
 
-      <div id="api-key-warning" class="warning" hidden>
-        Add your OpenWeatherMap API key in <code>config.js</code> to enable
-        weather overlays.
+      <div id="token-warning" class="warning" hidden>
+        No Mapbox access token found. Add one in <code>config.js</code>.
       </div>
 
       <div class="coords">
@@ -50,11 +44,7 @@
       </div>
     </aside>
 
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
     <script src="config.js"></script>
     <script src="app.js"></script>
   </body>

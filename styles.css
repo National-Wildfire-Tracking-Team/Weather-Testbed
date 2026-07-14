@@ -54,7 +54,7 @@ body {
   top: 80px;
   right: 16px;
   z-index: 1000;
-  width: 220px;
+  width: 230px;
   padding: 16px;
   background: var(--panel-bg);
   backdrop-filter: blur(6px);
@@ -71,19 +71,14 @@ body {
   color: var(--muted);
 }
 
-.layer-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  cursor: pointer;
+.field select {
+  width: 100%;
+  padding: 8px 10px;
   font-size: 0.9rem;
-}
-
-.layer-toggle input {
-  accent-color: var(--accent);
-  width: 16px;
-  height: 16px;
+  color: var(--text);
+  background: rgba(2, 6, 23, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
 }
 
 .warning {

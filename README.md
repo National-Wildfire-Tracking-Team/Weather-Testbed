@@ -17,10 +17,10 @@ precipitation, temperature, wind) powered by the OpenWeatherMap tile API.
 
 This is a static site — no build step or server-side code required.
 
-1. **(Optional) Add a weather API key.** Open [`config.js`](config.js) and set
-   `OPENWEATHER_API_KEY` to a free key from
-   [openweathermap.org/api](https://openweathermap.org/api). Without a key the
-   base map still works; only the weather overlays are disabled.
+1. **Set your Mapbox token.** Open [`config.js`](config.js) and set
+   `MAPBOX_TOKEN` to a **public** token (starts with `pk.`) from
+   [account.mapbox.com/access-tokens](https://account.mapbox.com/access-tokens/).
+   A token is already included for testing.
 
 2. **Serve the files.** Any static file server works. For example:
 
@@ -30,20 +30,28 @@ This is a static site — no build step or server-side code required.
 
    Then open <http://localhost:8000> in your browser.
 
-   You can also just open `index.html` directly, but serving over HTTP is
-   recommended so tile requests behave consistently.
+## Deploying to GitHub Pages
+
+This repo includes a workflow ([`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml))
+that publishes the static site to GitHub Pages.
+
+**One-time setup:** In the repository, go to **Settings → Pages → Build and
+deployment → Source** and select **GitHub Actions**. (The Actions token cannot
+enable Pages automatically, so this manual step is required once.) After that,
+every push to `main` deploys the site, and the live URL appears in the workflow
+run and under Settings → Pages.
 
 ## Files
 
-| File         | Purpose                                             |
-| ------------ | --------------------------------------------------- |
-| `index.html` | Page markup and layer controls                      |
-| `styles.css` | Styling for the map and control panel               |
-| `app.js`     | Map initialization, marker handling, weather layers |
-| `config.js`  | Map defaults and the OpenWeatherMap API key         |
+| File         | Purpose                                          |
+| ------------ | ------------------------------------------------ |
+| `index.html` | Page markup, style switcher, and controls        |
+| `styles.css` | Styling for the map and control panel            |
+| `app.js`     | Map initialization, controls, marker handling    |
+| `config.js`  | Mapbox token and map defaults                     |
 
-## Notes on the API key
+## Notes on the token
 
-The weather API key is used from the browser to request map tiles, so it is
-visible to clients. Only use a key intended for public/client-side tile access
-(OpenWeatherMap map-tile keys are). Do not commit private/secret keys here.
+The Mapbox token is used from the browser, so it is visible to clients. Only use
+a **public** token (`pk.`). You can restrict a public token by URL in the Mapbox
+dashboard to limit where it may be used. Never commit a secret token (`sk.`).
