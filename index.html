@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Testbed — Mapbox Map Test</title>
+
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Weather Testbed</h1>
+      <p class="subtitle">Simple map test — powered by Mapbox GL JS</p>
+    </header>
+
+    <div id="map"></div>
+
+    <aside class="panel">
+      <h2>Map style</h2>
+      <label class="field">
+        <select id="style-select">
+          <option value="mapbox://styles/mapbox/satellite-streets-v12">
+            Satellite Streets
+          </option>
+          <option value="mapbox://styles/mapbox/outdoors-v12" selected>
+            Outdoors
+          </option>
+          <option value="mapbox://styles/mapbox/streets-v12">Streets</option>
+          <option value="mapbox://styles/mapbox/dark-v11">Dark</option>
+          <option value="mapbox://styles/mapbox/light-v11">Light</option>
+        </select>
+      </label>
+
+      <div id="token-warning" class="warning" hidden>
+        No Mapbox access token found. Add one in <code>config.js</code>.
+      </div>
+
+      <div class="coords">
+        <span id="coords-display">Click the map to drop a marker</span>
+      </div>
+    </aside>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
