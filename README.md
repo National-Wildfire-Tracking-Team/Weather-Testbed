@@ -41,6 +41,23 @@ enable Pages automatically, so this manual step is required once.) After that,
 every push to `main` deploys the site, and the live URL appears in the workflow
 run and under Settings → Pages.
 
+## Deploying to GitHub Pages
+
+This repo includes a workflow ([`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml))
+that publishes the static site to GitHub Pages automatically.
+
+To enable it (one-time setup):
+
+1. In the repository, go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, select **GitHub Actions**.
+3. Push to `main` (merge the PR) or re-run the workflow from the **Actions** tab.
+   The site URL will appear in the workflow run and under Settings → Pages.
+
+> **Why you saw "page not found":** the site files only lived on the feature
+> branch, so `main` had no `index.html` to serve. Merging the PR (or letting the
+> workflow deploy this branch) fixes that. If your Pages source was set to
+> "Deploy from a branch", switch it to "GitHub Actions" as above.
+
 ## Files
 
 | File         | Purpose                                          |
