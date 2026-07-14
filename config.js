@@ -1,18 +1,19 @@
 // Weather Testbed configuration
 //
-// The map itself (Leaflet + OpenStreetMap) works with no API key.
-// To enable the weather overlay layers (clouds, precipitation, temperature,
-// wind) get a free API key from https://openweathermap.org/api and paste it
-// below.
+// Mapbox access token. This must be a PUBLIC token (starts with "pk.") since it
+// is used from the browser. Get or manage tokens at
+// https://account.mapbox.com/access-tokens/
 //
-// NOTE: This key is exposed to the browser, so only use a key that is safe for
-// public/client-side use (as OpenWeatherMap keys for tile layers are).
+// You can restrict a public token by URL in the Mapbox dashboard to limit where
+// it may be used.
 window.CONFIG = {
-  // Replace with your OpenWeatherMap API key, e.g. "abc123def456..."
-  OPENWEATHER_API_KEY: "",
+  MAPBOX_TOKEN:
+    "pk.eyJ1Ijoia2Jlc2hvcmU2IiwiYSI6ImNtaG1kN3NvMjA5eTEyaW9nNG9uMjdqcWUifQ.JywdBqHqT3tcQ8IbyljLjg",
 
-  // Initial map view: [latitude, longitude] and zoom level.
-  // Defaults to the continental United States (wildfire tracking context).
-  INITIAL_CENTER: [39.5, -98.35],
-  INITIAL_ZOOM: 4,
+  // Initial map view.
+  INITIAL_CENTER: [-98.35, 39.5], // [longitude, latitude] — continental US
+  INITIAL_ZOOM: 3.5,
+
+  // Default map style (must match one of the <option> values in index.html).
+  DEFAULT_STYLE: "mapbox://styles/mapbox/outdoors-v12",
 };
