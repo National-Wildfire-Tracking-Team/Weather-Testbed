@@ -1,15 +1,17 @@
 # Weather-Testbed
 
-A simple map test website for the National Wildfire Tracking Team, built with
-[Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/).
+A simple map test website for the National Wildfire Tracking Team.
+
+It renders an interactive [Leaflet](https://leafletjs.com/) map on top of
+OpenStreetMap tiles and adds optional weather overlay layers (clouds,
+precipitation, temperature, wind) powered by the OpenWeatherMap tile API.
 
 ## Features
 
-- Interactive vector map with pan/zoom and rotation
-- Style switcher (Satellite, Outdoors, Streets, Dark, Light)
-- Navigation, geolocation, and scale controls
-- Click anywhere to drop a marker and read its longitude/latitude
-- Responsive layout for desktop and mobile
+- Interactive pan/zoom map (no API key needed for the base map)
+- Click anywhere to drop a marker and read its latitude/longitude
+- Toggleable weather overlays (requires an OpenWeatherMap API key)
+- Responsive layout that works on desktop and mobile
 
 ## Getting started
 
