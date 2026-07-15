@@ -17,30 +17,46 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Optionally supply a Mapbox token via repository secrets. The build
+          # falls back to the token baked into src/config.js when unset.
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+
       # NOTE: GitHub Pages must be enabled once for this repository via
       # Settings > Pages > Build and deployment > Source: "GitHub Actions".
-      # The default GITHUB_TOKEN is not permitted to create the Pages site
-      # itself (that requires admin), so we do NOT pass `enablement: true`
-      # here. Doing so previously caused the workflow to always fail with
-      # "Create Pages site failed. Error: Resource not accessible by integration".
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          # Upload the whole repository root (static site, no build step).
-          path: "."
+          # Publish the Vite build output.
+          path: "dist"
 
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

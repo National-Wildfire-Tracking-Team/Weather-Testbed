@@ -4,12 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather Testbed — Mapbox Map Test</title>
-
-    <link
-      href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="app-header">
@@ -36,7 +30,8 @@
       </label>
 
       <div id="token-warning" class="warning" hidden>
-        No Mapbox access token found. Add one in <code>config.js</code>.
+        No Mapbox access token found. Set <code>VITE_MAPBOX_TOKEN</code> or edit
+        <code>src/config.js</code>.
       </div>
 
       <div class="coords">
@@ -44,8 +39,6 @@
       </div>
     </aside>
 
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
