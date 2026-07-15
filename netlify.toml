@@ -1,0 +1,7 @@
+[build]
+  # This is a plain static site — no build step is required. Publish the
+  # repository root, which is where index.html lives. Without this, Netlify
+  # tries to guess a publish directory (often an empty/nonexistent build
+  # folder), which results in a "Page not found" error at the deploy URL.
+  publish = "."
+  command = ""

@@ -58,6 +58,25 @@ To enable it (one-time setup):
 > workflow deploy this branch) fixes that. If your Pages source was set to
 > "Deploy from a branch", switch it to "GitHub Actions" as above.
 
+## Deploying to Netlify
+
+This repo includes a [`netlify.toml`](netlify.toml) so Netlify serves the site
+correctly out of the box. Because this is a plain static site, there is **no
+build step** and the files are published straight from the repository root
+(where `index.html` lives).
+
+If you connect the repo to Netlify:
+
+1. Leave the **Build command** empty.
+2. Set the **Publish directory** to the repository root (`.`). The
+   `netlify.toml` already does this for you.
+3. Deploy — the site URL will appear in the Netlify dashboard.
+
+> **Why you saw "Page not found":** without a publish directory set, Netlify
+> guesses one (often an empty or nonexistent build folder), so there is no
+> `index.html` to serve and every request 404s. The `netlify.toml` in this repo
+> pins the publish directory to the root and fixes that.
+
 ## Files
 
 | File         | Purpose                                          |
