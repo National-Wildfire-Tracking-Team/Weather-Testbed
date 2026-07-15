@@ -13,6 +13,75 @@
 
     <div id="map"></div>
 
+    <aside class="sidebar" aria-label="Map layers and options">
+      <h2>Layers &amp; options</h2>
+      <p class="sidebar-hint">Toggle map features on and off.</p>
+
+      <ul class="toggle-list" id="toggle-list">
+        <li class="toggle-item">
+          <label class="toggle" for="toggle-terrain">
+            <span class="toggle-label">
+              <span class="toggle-title">3D terrain</span>
+              <span class="toggle-desc">Exaggerated elevation relief</span>
+            </span>
+            <span class="switch">
+              <input type="checkbox" id="toggle-terrain" data-toggle="terrain" />
+              <span class="slider" aria-hidden="true"></span>
+            </span>
+          </label>
+        </li>
+
+        <li class="toggle-item">
+          <label class="toggle" for="toggle-sky">
+            <span class="toggle-label">
+              <span class="toggle-title">Sky &amp; atmosphere</span>
+              <span class="toggle-desc">Add a horizon sky gradient</span>
+            </span>
+            <span class="switch">
+              <input type="checkbox" id="toggle-sky" data-toggle="sky" />
+              <span class="slider" aria-hidden="true"></span>
+            </span>
+          </label>
+        </li>
+
+        <li class="toggle-item">
+          <label class="toggle" for="toggle-scroll-zoom">
+            <span class="toggle-label">
+              <span class="toggle-title">Scroll to zoom</span>
+              <span class="toggle-desc">Zoom the map with the scroll wheel</span>
+            </span>
+            <span class="switch">
+              <input
+                type="checkbox"
+                id="toggle-scroll-zoom"
+                data-toggle="scrollZoom"
+                checked
+              />
+              <span class="slider" aria-hidden="true"></span>
+            </span>
+          </label>
+        </li>
+
+        <li class="toggle-item">
+          <label class="toggle" for="toggle-rotate">
+            <span class="toggle-label">
+              <span class="toggle-title">Rotate &amp; pitch</span>
+              <span class="toggle-desc">Drag to rotate and tilt the map</span>
+            </span>
+            <span class="switch">
+              <input
+                type="checkbox"
+                id="toggle-rotate"
+                data-toggle="rotate"
+                checked
+              />
+              <span class="slider" aria-hidden="true"></span>
+            </span>
+          </label>
+        </li>
+      </ul>
+    </aside>
+
     <aside class="panel">
       <h2>Map style</h2>
       <label class="field">
