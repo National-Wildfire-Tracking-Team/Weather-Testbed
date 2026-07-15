@@ -12,6 +12,9 @@ and lets you switch base styles and drop a marker to read coordinates.
 - **Live weather-warnings overlay** — toggle on real-time National Weather
   Service (NWS) warning perimeters across the US, color-coded by severity, that
   drape over the 3D terrain. Click a warning to see its event, area, and expiry.
+- **3D buildings** — toggle extruded building footprints (from free
+  OpenStreetMap data bundled in Mapbox's standard vector tiles) across the US
+  and worldwide. Zoom in and tilt the map to see them.
 - Navigation, geolocation, and scale controls
 - Responsive layout that works on desktop and mobile
 
@@ -161,6 +164,23 @@ perimeters follow the elevation of the ground rather than floating above it.
 They also set `*-emissive-strength: 1` so the overlay stays bright and legible
 instead of being darkened by terrain lighting. Click any warning polygon for a
 popup with the event name, affected area, expiry time, and issuing office.
+
+## 3D buildings
+
+Toggling **3D buildings** in the sidebar extrudes building footprints into 3D.
+This needs **no extra software, API key, or paid service** beyond the Mapbox
+token the map already uses: Mapbox's standard vector tiles bundle
+[OpenStreetMap](https://www.openstreetmap.org/) building footprints in the
+`composite` source's `building` source-layer, each carrying `height` and
+`min_height` attributes. The toggle adds a `fill-extrusion` layer that reads
+those attributes, so buildings appear across the entire US (and the rest of the
+world) for free.
+
+Because the building geometry only exists in the tiles at high zoom, the layer
+has a `minzoom` and the extrusion height eases in around zoom 15 to avoid a hard
+pop. **Zoom in and tilt the map** (enable *Rotate & pitch*, then drag) to see
+the buildings in 3D. The layer is inserted beneath the first label layer so
+street and place labels stay readable on top.
 
 ## Files
 

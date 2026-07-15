@@ -145,6 +145,14 @@ function setupToggles(map) {
       },
     },
 
+    buildings: {
+      styleDependent: true,
+      apply(enabled) {
+        if (enabled) addBuildings3d(map);
+        else removeBuildings3d(map);
+      },
+    },
+
     sky: {
       styleDependent: true,
       apply(enabled) {
@@ -215,4 +223,68 @@ function setupToggles(map) {
       else config.apply(input.checked);
     });
   });
+}
+
+// 3D buildings, drawn from the free OpenStreetMap building footprints that
+// Mapbox bundles into its standard vector tiles (the "composite" source's
+// "building" source-layer, with `height`/`min_height` attributes). Extruding
+// them costs nothing beyond the Mapbox token already in use and covers the
+// entire US (and the rest of the world). Buildings only exist in the tiles at
+// high zoom, hence the minzoom below — zoom in and tilt the map to see them.
+const BUILDINGS_LAYER_ID = "3d-buildings";
+const BUILDINGS_SOURCE = "composite";
+const BUILDINGS_SOURCE_LAYER = "building";
+
+function addBuildings3d(map) {
+  if (map.getLayer(BUILDINGS_LAYER_ID)) return;
+  // Every base style in this testbed ships the composite/building data, but
+  // guard anyway so a style without it fails gracefully instead of throwing.
+  if (!map.getSource(BUILDINGS_SOURCE)) return;
+
+  // Insert the extrusions beneath the first symbol (label) layer so street
+  // and place labels stay readable on top of the buildings.
+  const layers = map.getStyle().layers || [];
+  const labelLayer = layers.find(
+    (l) => l.type === "symbol" && l.layout && l.layout["text-field"]
+  );
+  const beforeId = labelLayer ? labelLayer.id : undefined;
+
+  map.addLayer(
+    {
+      id: BUILDINGS_LAYER_ID,
+      source: BUILDINGS_SOURCE,
+      "source-layer": BUILDINGS_SOURCE_LAYER,
+      filter: ["==", ["get", "extrude"], "true"],
+      type: "fill-extrusion",
+      minzoom: 14,
+      paint: {
+        "fill-extrusion-color": "#aab2bd",
+        // Grow the extrusion in as it becomes visible to avoid a hard pop.
+        "fill-extrusion-height": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          14,
+          0,
+          15.05,
+          ["get", "height"],
+        ],
+        "fill-extrusion-base": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          14,
+          0,
+          15.05,
+          ["get", "min_height"],
+        ],
+        "fill-extrusion-opacity": 0.85,
+      },
+    },
+    beforeId
+  );
+}
+
+function removeBuildings3d(map) {
+  if (map.getLayer(BUILDINGS_LAYER_ID)) map.removeLayer(BUILDINGS_LAYER_ID);
 }
