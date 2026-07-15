@@ -1,7 +1,24 @@
+# Netlify configuration for the Weather Testbed static site.
+#
+# This is a plain static site (no build step). The two most common causes of a
+# Netlify "Page not found" error are (1) the publish directory not pointing at
+# the folder that contains index.html, and (2) requests to paths that don't map
+# to a file. Both are handled below.
+#
+# NOTE: Settings in this file OVERRIDE the values configured in the Netlify UI
+# (Site settings > Build & deploy). So even if the dashboard has a stale publish
+# directory like "dist" or "build", this file will take precedence.
+
 [build]
-  # This is a plain static site — no build step is required. Publish the
-  # repository root, which is where index.html lives. Without this, Netlify
-  # tries to guess a publish directory (often an empty/nonexistent build
-  # folder), which results in a "Page not found" error at the deploy URL.
-  publish = "."
+  # No build step — serve the files exactly as they are in the repo.
   command = ""
+  # The site's index.html lives at the repository root, so publish from ".".
+  publish = "."
+
+# Safety net: this site is effectively a single page. Serve index.html (with a
+# 200, not a redirect) for any path that doesn't match a real file, so a
+# mistyped or unexpected URL shows the map instead of Netlify's 404 page.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

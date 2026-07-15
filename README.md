@@ -63,7 +63,8 @@ To enable it (one-time setup):
 This repo includes a [`netlify.toml`](netlify.toml) so Netlify serves the site
 correctly out of the box. Because this is a plain static site, there is **no
 build step** and the files are published straight from the repository root
-(where `index.html` lives).
+(where `index.html` lives). The config also adds a `/* -> /index.html 200`
+rewrite so no URL ever hits Netlify's built-in "Page not found" page.
 
 If you connect the repo to Netlify:
 
@@ -72,10 +73,34 @@ If you connect the repo to Netlify:
    `netlify.toml` already does this for you.
 3. Deploy — the site URL will appear in the Netlify dashboard.
 
-> **Why you saw "Page not found":** without a publish directory set, Netlify
-> guesses one (often an empty or nonexistent build folder), so there is no
-> `index.html` to serve and every request 404s. The `netlify.toml` in this repo
-> pins the publish directory to the root and fixes that.
+### Still seeing "Page not found"? Troubleshooting checklist
+
+Based on Netlify's official
+[Page-not-found support guide](https://answers.netlify.com/t/support-guide-i-ve-deployed-my-site-but-i-still-see-page-not-found/125),
+here's what to verify:
+
+- **Deploy the branch that has `netlify.toml`.** The config lives in this
+  branch/PR. If Netlify builds `main`, merge the PR (or point the Netlify site
+  at this branch) so the config is present in the deploy.
+- **Publish directory.** In **Site settings → Build & deploy → Continuous
+  deployment**, the publish directory must be the repo root. `netlify.toml`
+  overrides the UI, but clear any stale value like `dist` or `build` to avoid
+  confusion.
+- **Base directory.** If a **Base directory** is set in the UI, the publish path
+  is resolved relative to it. Leave it empty so `publish = "."` means the repo
+  root.
+- **Files are at the top level.** `index.html` must not be nested in a subfolder
+  — in this repo it is at the root, which is correct.
+- **Confirm the files actually deployed.** Open the deploy in Netlify and use
+  the **Deploy file browser** (or download the deploy) to confirm `index.html`
+  is present at the root of the published output.
+- **Clear your browser cache / try an incognito window.** A cached 404 can
+  persist after the fix is deployed.
+
+> **Why you saw "Page not found":** without a correct publish directory, Netlify
+> can't find `index.html` and every request 404s. The `netlify.toml` in this
+> repo pins the publish directory to the root and adds an SPA-style fallback so
+> the map always loads.
 
 ## Files
 
