@@ -9,6 +9,9 @@ and lets you switch base styles and drop a marker to read coordinates.
 
 - Interactive pan/zoom map with multiple selectable base styles
 - Click anywhere to drop a marker and read its latitude/longitude
+- **Live weather-warnings overlay** — toggle on real-time National Weather
+  Service (NWS) warning perimeters across the US, color-coded by severity, that
+  drape over the 3D terrain. Click a warning to see its event, area, and expiry.
 - Navigation, geolocation, and scale controls
 - Responsive layout that works on desktop and mobile
 
@@ -141,12 +144,31 @@ Netlify dashboard:
 - **Clear your browser cache / try an incognito window.** A cached 404 can
   persist after the fix is deployed.
 
+## Weather warnings overlay
+
+Toggling **Weather warnings** in the sidebar fetches active alerts from the
+free, key-less [NWS alerts API](https://www.weather.gov/documentation/services-web-api)
+(`https://api.weather.gov/alerts/active`) directly from the browser (the API
+sends permissive CORS headers). Only alerts that carry real polygon geometry —
+the "storm-based" warnings such as Tornado, Severe Thunderstorm, Flash Flood and
+Marine warnings — are drawn, since those are the ones with a meaningful
+perimeter. The data auto-refreshes every 3 minutes while the overlay is on.
+
+Each warning is rendered as a translucent fill plus a colored perimeter line,
+color-coded by NWS `severity` (Extreme → Unknown). Both layers are 2D
+fill/line layers, which Mapbox GL JS **drapes onto the 3D terrain**, so the
+perimeters follow the elevation of the ground rather than floating above it.
+They also set `*-emissive-strength: 1` so the overlay stays bright and legible
+instead of being darkened by terrain lighting. Click any warning polygon for a
+popup with the event name, affected area, expiry time, and issuing office.
+
 ## Files
 
 | File / dir       | Purpose                                             |
 | ---------------- | --------------------------------------------------- |
 | `index.html`     | Page markup and Vite entry point                    |
 | `src/main.js`    | Map initialization, controls, marker handling       |
+| `src/weatherWarnings.js` | Live NWS weather-warnings overlay (fetch + layers) |
 | `src/config.js`  | Mapbox token (env-driven) and map defaults          |
 | `src/styles.css` | Styling for the map and control panel               |
 | `vite.config.js` | Build configuration (relative base, output to dist) |

@@ -19,6 +19,46 @@
 
       <ul class="toggle-list" id="toggle-list">
         <li class="toggle-item">
+          <label class="toggle" for="toggle-warnings">
+            <span class="toggle-label">
+              <span class="toggle-title">Weather warnings</span>
+              <span class="toggle-desc">Live NWS warning perimeters (US)</span>
+            </span>
+            <span class="switch">
+              <input
+                type="checkbox"
+                id="toggle-warnings"
+                data-toggle="weatherWarnings"
+              />
+              <span class="slider" aria-hidden="true"></span>
+            </span>
+          </label>
+
+          <div class="warnings-status" id="warnings-status" hidden></div>
+
+          <div class="warnings-legend" id="warnings-legend" hidden>
+            <span class="warnings-legend-title">Severity</span>
+            <ul>
+              <li>
+                <span class="swatch" style="background:#7f1d1d"></span>Extreme
+              </li>
+              <li>
+                <span class="swatch" style="background:#dc2626"></span>Severe
+              </li>
+              <li>
+                <span class="swatch" style="background:#f97316"></span>Moderate
+              </li>
+              <li>
+                <span class="swatch" style="background:#facc15"></span>Minor
+              </li>
+              <li>
+                <span class="swatch" style="background:#38bdf8"></span>Unknown
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="toggle-item">
           <label class="toggle" for="toggle-terrain">
             <span class="toggle-label">
               <span class="toggle-title">3D terrain</span>
