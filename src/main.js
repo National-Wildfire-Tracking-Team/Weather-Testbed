@@ -2,6 +2,11 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./styles.css";
 import { CONFIG } from "./config.js";
+import {
+  enableWeatherWarnings,
+  disableWeatherWarnings,
+  reapplyWeatherWarnings,
+} from "./weatherWarnings.js";
 
 const token = CONFIG.MAPBOX_TOKEN;
 const center = CONFIG.INITIAL_CENTER || [-98.35, 39.5];
@@ -22,6 +27,9 @@ if (!token || token.indexOf("pk.") !== 0) {
     center,
     zoom,
   });
+
+  // Expose the map instance for quick console debugging in this testbed.
+  window.map = map;
 
   map.addControl(new mapboxgl.NavigationControl(), "top-left");
   map.addControl(
@@ -74,7 +82,50 @@ if (!token || token.indexOf("pk.") !== 0) {
 // entry here. Set `styleDependent: true` for toggles that add sources/layers
 // (those get re-applied automatically whenever the map style changes).
 function setupToggles(map) {
+  const statusEl = document.getElementById("warnings-status");
+  const legendEl = document.getElementById("warnings-legend");
+
+  const showWarningsStatus = (status, detail) => {
+    if (!statusEl) return;
+    if (status === "loading") {
+      statusEl.hidden = false;
+      statusEl.textContent = "Loading live warnings…";
+      statusEl.classList.remove("is-error");
+    } else if (status === "ready") {
+      statusEl.hidden = false;
+      const count = (detail && detail.count) || 0;
+      statusEl.textContent =
+        count === 1
+          ? "1 active warning with a perimeter"
+          : `${count} active warnings with perimeters`;
+      statusEl.classList.remove("is-error");
+    } else if (status === "error") {
+      statusEl.hidden = false;
+      statusEl.textContent = "Could not load warnings — will retry.";
+      statusEl.classList.add("is-error");
+    } else {
+      statusEl.hidden = true;
+      statusEl.textContent = "";
+      statusEl.classList.remove("is-error");
+    }
+  };
+
   const toggles = {
+    weatherWarnings: {
+      styleDependent: true,
+      apply(enabled) {
+        if (legendEl) legendEl.hidden = !enabled;
+        if (enabled) {
+          enableWeatherWarnings(map, showWarningsStatus);
+        } else {
+          disableWeatherWarnings(map);
+        }
+      },
+      reapply(enabled) {
+        if (enabled) reapplyWeatherWarnings(map);
+      },
+    },
+
     terrain: {
       styleDependent: true,
       apply(enabled) {
@@ -144,8 +195,12 @@ function setupToggles(map) {
 
   inputs.forEach((input) => {
     input.addEventListener("change", () => applyToggle(input));
-    // Apply the initial checked state (e.g. scroll zoom / rotate default on).
-    applyToggle(input);
+    // Apply the initial checked state for non-style-dependent toggles (e.g.
+    // scroll zoom / rotate default on). Style-dependent toggles are applied by
+    // the `style.load` handler below instead, so we don't touch the style
+    // before it has finished loading.
+    const config = toggles[input.dataset.toggle];
+    if (config && !config.styleDependent) applyToggle(input);
   });
 
   // Re-apply style-dependent toggles after a style change, since setStyle
@@ -153,7 +208,11 @@ function setupToggles(map) {
   map.on("style.load", () => {
     inputs.forEach((input) => {
       const config = toggles[input.dataset.toggle];
-      if (config && config.styleDependent) config.apply(input.checked);
+      if (!config || !config.styleDependent) return;
+      // Prefer a lighter-weight reapply handler (reuses cached data) when a
+      // toggle provides one; otherwise fall back to the normal apply.
+      if (config.reapply) config.reapply(input.checked);
+      else config.apply(input.checked);
     });
   });
 }
