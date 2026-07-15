@@ -1,0 +1,18 @@
+{
+  "name": "weather-testbed",
+  "version": "1.0.0",
+  "description": "Interactive Mapbox map testbed for the National Wildfire Tracking Team.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "mapbox-gl": "^3.9.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

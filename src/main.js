@@ -1,27 +1,26 @@
-(function () {
-  "use strict";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "./styles.css";
+import { CONFIG } from "./config.js";
 
-  var config = window.CONFIG || {};
-  var token = (config.MAPBOX_TOKEN || "").trim();
-  var center = config.INITIAL_CENTER || [-98.35, 39.5];
-  var zoom = config.INITIAL_ZOOM || 3.5;
-  var style = config.DEFAULT_STYLE || "mapbox://styles/mapbox/outdoors-v12";
+const token = CONFIG.MAPBOX_TOKEN;
+const center = CONFIG.INITIAL_CENTER || [-98.35, 39.5];
+const zoom = CONFIG.INITIAL_ZOOM || 3.5;
+const style = CONFIG.DEFAULT_STYLE || "mapbox://styles/mapbox/outdoors-v12";
 
-  var warning = document.getElementById("token-warning");
-  var coordsDisplay = document.getElementById("coords-display");
+const warning = document.getElementById("token-warning");
+const coordsDisplay = document.getElementById("coords-display");
 
-  if (!token || token.indexOf("pk.") !== 0) {
-    if (warning) warning.hidden = false;
-    return;
-  }
-
+if (!token || token.indexOf("pk.") !== 0) {
+  if (warning) warning.hidden = false;
+} else {
   mapboxgl.accessToken = token;
 
-  var map = new mapboxgl.Map({
+  const map = new mapboxgl.Map({
     container: "map",
-    style: style,
-    center: center,
-    zoom: zoom,
+    style,
+    center,
+    zoom,
   });
 
   map.addControl(new mapboxgl.NavigationControl(), "top-left");
@@ -35,11 +34,11 @@
   );
   map.addControl(new mapboxgl.ScaleControl());
 
-  var marker = null;
+  let marker = null;
 
-  map.on("click", function (e) {
-    var lng = e.lngLat.lng.toFixed(4);
-    var lat = e.lngLat.lat.toFixed(4);
+  map.on("click", (e) => {
+    const lng = e.lngLat.lng.toFixed(4);
+    const lat = e.lngLat.lat.toFixed(4);
 
     if (marker) {
       marker.setLngLat(e.lngLat);
@@ -59,11 +58,11 @@
     coordsDisplay.textContent = "Lng: " + lng + ", Lat: " + lat;
   });
 
-  var styleSelect = document.getElementById("style-select");
+  const styleSelect = document.getElementById("style-select");
   if (styleSelect) {
     styleSelect.value = style;
-    styleSelect.addEventListener("change", function () {
+    styleSelect.addEventListener("change", () => {
       map.setStyle(styleSelect.value);
     });
   }
-})();
+}

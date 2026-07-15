@@ -2,114 +2,117 @@
 
 A simple map test website for the National Wildfire Tracking Team.
 
-It renders an interactive [Leaflet](https://leafletjs.com/) map on top of
-OpenStreetMap tiles and adds optional weather overlay layers (clouds,
-precipitation, temperature, wind) powered by the OpenWeatherMap tile API.
+It renders an interactive map with [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/)
+and lets you switch base styles and drop a marker to read coordinates.
 
 ## Features
 
-- Interactive pan/zoom map (no API key needed for the base map)
+- Interactive pan/zoom map with multiple selectable base styles
 - Click anywhere to drop a marker and read its latitude/longitude
-- Toggleable weather overlays (requires an OpenWeatherMap API key)
+- Navigation, geolocation, and scale controls
 - Responsive layout that works on desktop and mobile
 
-## Getting started
+## Tech / build
 
-This is a static site — no build step or server-side code required.
+The site is built with [Vite](https://vite.dev/). Dependencies (including
+`mapbox-gl`) are installed from npm and bundled/minified into a small set of
+hashed, cache-friendly assets in `dist/`. This replaces the previous approach of
+loading libraries from a CDN with `<script>` tags, giving us a real build
+pipeline as the app grows.
 
-1. **Set your Mapbox token.** Open [`config.js`](config.js) and set
-   `MAPBOX_TOKEN` to a **public** token (starts with `pk.`) from
-   [account.mapbox.com/access-tokens](https://account.mapbox.com/access-tokens/).
-   A token is already included for testing.
+### Prerequisites
 
-2. **Serve the files.** Any static file server works. For example:
+- [Node.js](https://nodejs.org/) 20+ and npm
+
+### Getting started
+
+1. **Install dependencies:**
 
    ```bash
-   python3 -m http.server 8000
+   npm install
    ```
 
-   Then open <http://localhost:8000> in your browser.
+2. **(Optional) Set your Mapbox token.** Copy `.env.example` to `.env.local` and
+   set a **public** token (starts with `pk.`) from
+   [account.mapbox.com/access-tokens](https://account.mapbox.com/access-tokens/):
+
+   ```bash
+   cp .env.example .env.local
+   # then edit .env.local and set VITE_MAPBOX_TOKEN
+   ```
+
+   A public token is already baked into `src/config.js` as a fallback for
+   testing, so this step is optional to get started.
+
+3. **Start the dev server** (hot reload):
+
+   ```bash
+   npm run dev
+   ```
+
+   Then open the URL Vite prints (defaults to <http://localhost:5173>).
+
+### Build for production
+
+```bash
+npm run build      # outputs the static site to dist/
+npm run preview    # serve the built dist/ locally to verify it
+```
 
 ## Deploying to GitHub Pages
 
 This repo includes a workflow ([`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml))
-that publishes the static site to GitHub Pages.
+that installs dependencies, runs `npm run build`, and publishes the generated
+`dist/` directory to GitHub Pages.
 
 **One-time setup:** In the repository, go to **Settings → Pages → Build and
 deployment → Source** and select **GitHub Actions**. (The Actions token cannot
 enable Pages automatically, so this manual step is required once.) After that,
-every push to `main` deploys the site, and the live URL appears in the workflow
-run and under Settings → Pages.
+every push to `main` builds and deploys the site, and the live URL appears in the
+workflow run and under Settings → Pages.
 
-## Deploying to GitHub Pages
-
-This repo includes a workflow ([`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml))
-that publishes the static site to GitHub Pages automatically.
-
-To enable it (one-time setup):
-
-1. In the repository, go to **Settings → Pages**.
-2. Under **Build and deployment → Source**, select **GitHub Actions**.
-3. Push to `main` (merge the PR) or re-run the workflow from the **Actions** tab.
-   The site URL will appear in the workflow run and under Settings → Pages.
-
-> **Why you saw "page not found":** the site files only lived on the feature
-> branch, so `main` had no `index.html` to serve. Merging the PR (or letting the
-> workflow deploy this branch) fixes that. If your Pages source was set to
-> "Deploy from a branch", switch it to "GitHub Actions" as above.
+To keep the token out of the repo you can add a `VITE_MAPBOX_TOKEN` repository
+secret (**Settings → Secrets and variables → Actions**); the workflow passes it
+to the build. Because Vite emits **relative** asset URLs (`base: "./"`), the
+build works both at the GitHub Pages project subpath (`/Weather-Testbed/`) and at
+a domain root.
 
 ## Deploying to Netlify
 
-This repo includes a [`netlify.toml`](netlify.toml) so Netlify serves the site
-correctly out of the box. Because this is a plain static site, there is **no
-build step** and the files are published straight from the repository root
-(where `index.html` lives). The config also adds a `/* -> /index.html 200`
-rewrite so no URL ever hits Netlify's built-in "Page not found" page.
+This repo includes a [`netlify.toml`](netlify.toml) that tells Netlify to run the
+Vite build and publish the `dist/` directory:
 
-If you connect the repo to Netlify:
+- **Build command:** `npm run build`
+- **Publish directory:** `dist`
 
-1. Leave the **Build command** empty.
-2. Set the **Publish directory** to the repository root (`.`). The
-   `netlify.toml` already does this for you.
-3. Deploy — the site URL will appear in the Netlify dashboard.
+It also adds a `/* -> /index.html 200` rewrite so no URL hits Netlify's built-in
+"Page not found" page. To keep the token out of the repo, set `VITE_MAPBOX_TOKEN`
+under **Site settings → Build & deploy → Environment**.
 
 ### Still seeing "Page not found"? Troubleshooting checklist
 
-Based on Netlify's official
-[Page-not-found support guide](https://answers.netlify.com/t/support-guide-i-ve-deployed-my-site-but-i-still-see-page-not-found/125),
-here's what to verify:
-
-- **Deploy the branch that has `netlify.toml`.** The config lives in this
-  branch/PR. If Netlify builds `main`, merge the PR (or point the Netlify site
-  at this branch) so the config is present in the deploy.
-- **Publish directory.** In **Site settings → Build & deploy → Continuous
-  deployment**, the publish directory must be the repo root. `netlify.toml`
-  overrides the UI, but clear any stale value like `dist` or `build` to avoid
-  confusion.
+- **Deploy the branch that has `netlify.toml`.** If Netlify builds `main`, merge
+  the PR (or point the Netlify site at this branch) so the config is present.
+- **Publish directory must be `dist`.** `netlify.toml` sets this, but clear any
+  stale UI value (like `.`, `build`, or `public`) to avoid confusion.
 - **Base directory.** If a **Base directory** is set in the UI, the publish path
-  is resolved relative to it. Leave it empty so `publish = "."` means the repo
-  root.
-- **Files are at the top level.** `index.html` must not be nested in a subfolder
-  — in this repo it is at the root, which is correct.
-- **Confirm the files actually deployed.** Open the deploy in Netlify and use
-  the **Deploy file browser** (or download the deploy) to confirm `index.html`
-  is present at the root of the published output.
+  is resolved relative to it. Leave it empty so `publish = "dist"` resolves at
+  the repo root.
+- **Confirm the build succeeded.** Open the deploy log and confirm
+  `npm run build` ran and produced `dist/index.html`.
 - **Clear your browser cache / try an incognito window.** A cached 404 can
   persist after the fix is deployed.
 
-> **Why you saw "Page not found":** without a correct publish directory, Netlify
-> can't find `index.html` and every request 404s. The `netlify.toml` in this
-> repo pins the publish directory to the root and adds an SPA-style fallback so
-> the map always loads.
-
 ## Files
 
-| File         | Purpose                                          |
-| ------------ | ------------------------------------------------ |
-| `index.html` | Page markup, style switcher, and controls        |
-| `styles.css` | Styling for the map and control panel            |
-| `app.js`     | Map initialization, controls, marker handling    |
-| `config.js`  | Mapbox token and map defaults                     |
+| File / dir       | Purpose                                             |
+| ---------------- | --------------------------------------------------- |
+| `index.html`     | Page markup and Vite entry point                    |
+| `src/main.js`    | Map initialization, controls, marker handling       |
+| `src/config.js`  | Mapbox token (env-driven) and map defaults          |
+| `src/styles.css` | Styling for the map and control panel               |
+| `vite.config.js` | Build configuration (relative base, output to dist) |
+| `package.json`   | Dependencies and `dev` / `build` / `preview` scripts |
 
 ## Notes on the token
 
