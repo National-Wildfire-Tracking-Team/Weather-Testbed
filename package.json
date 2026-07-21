@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "mapbox-gl": "^3.9.0"
+    "buffer": "^6.0.3",
+    "mapbox-gl": "^3.9.0",
+    "nexrad-level-2-data": "^2.4.3"
   },
   "devDependencies": {
     "vite": "^6.0.0"

@@ -19,6 +19,23 @@
 
       <ul class="toggle-list" id="toggle-list">
         <li class="toggle-item">
+          <label class="toggle" for="toggle-radar">
+            <span class="toggle-label">
+              <span class="toggle-title">Radar (NEXRAD Level 2)</span>
+              <span class="toggle-desc">
+                Show WSR-88D stations; click one for its latest scan
+              </span>
+            </span>
+            <span class="switch">
+              <input type="checkbox" id="toggle-radar" data-toggle="radar" />
+              <span class="slider" aria-hidden="true"></span>
+            </span>
+          </label>
+
+          <div class="warnings-status" id="radar-status" hidden></div>
+        </li>
+
+        <li class="toggle-item">
           <label class="toggle" for="toggle-warnings">
             <span class="toggle-label">
               <span class="toggle-title">Weather warnings</span>

@@ -7,6 +7,12 @@ import {
   disableWeatherWarnings,
   reapplyWeatherWarnings,
 } from "./weatherWarnings.js";
+import {
+  enableRadar,
+  disableRadar,
+  reapplyRadar,
+  radarStatusToControl,
+} from "./radar.js";
 
 const token = CONFIG.MAPBOX_TOKEN;
 const center = CONFIG.INITIAL_CENTER || [-98.35, 39.5];
@@ -110,7 +116,48 @@ function setupToggles(map) {
     }
   };
 
+  const radarStatusEl = document.getElementById("radar-status");
+  const showRadarStatus = (state, detail) => {
+    // Keep the top-of-map control's status line in sync…
+    radarStatusToControl(state, detail);
+    // …and mirror a short line into the sidebar.
+    if (!radarStatusEl) return;
+    if (state === "loading") {
+      radarStatusEl.hidden = false;
+      radarStatusEl.textContent = `Loading ${detail && detail.id ? detail.id : "radar"}…`;
+      radarStatusEl.classList.remove("is-error");
+    } else if (state === "ready") {
+      radarStatusEl.hidden = false;
+      radarStatusEl.textContent = `Showing ${detail.id} ${
+        detail.product === "velocity" ? "velocity" : "reflectivity"
+      }`;
+      radarStatusEl.classList.remove("is-error");
+    } else if (state === "error") {
+      radarStatusEl.hidden = false;
+      radarStatusEl.textContent = `${detail && detail.id ? detail.id + ": " : ""}${
+        (detail && detail.message) || "load failed"
+      }`;
+      radarStatusEl.classList.add("is-error");
+    } else {
+      radarStatusEl.hidden = false;
+      radarStatusEl.textContent = "Click a station dot to load its latest scan.";
+      radarStatusEl.classList.remove("is-error");
+    }
+  };
+
   const toggles = {
+    radar: {
+      styleDependent: true,
+      apply(enabled) {
+        if (radarStatusEl) radarStatusEl.hidden = !enabled;
+        if (enabled) enableRadar(map, showRadarStatus);
+        else disableRadar(map);
+      },
+      reapply(enabled) {
+        if (enabled) reapplyRadar(map);
+      },
+    },
+
     weatherWarnings: {
       styleDependent: true,
       apply(enabled) {
