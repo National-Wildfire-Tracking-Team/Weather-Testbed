@@ -12,6 +12,10 @@ and lets you switch base styles and drop a marker to read coordinates.
 - **Live weather-warnings overlay** — toggle on real-time National Weather
   Service (NWS) warning perimeters across the US, color-coded by severity, that
   drape over the 3D terrain. Click a warning to see its event, area, and expiry.
+- **NEXRAD Level 2 radar** — toggle on the WSR-88D radar network: every station
+  is plotted on the map, and clicking one downloads and renders its most recent
+  volume scan. A control at the top of the map switches between base
+  **reflectivity** and base **velocity** (green toward the radar, red away).
 - **3D buildings** — toggle extruded building footprints (from free
   OpenStreetMap data bundled in Mapbox's standard vector tiles) across the US
   and worldwide. Zoom in and tilt the map to see them.
@@ -147,6 +151,60 @@ Netlify dashboard:
 - **Clear your browser cache / try an incognito window.** A cached 404 can
   persist after the fix is deployed.
 
+## NEXRAD Level 2 radar
+
+Toggling **Radar (NEXRAD Level 2)** in the sidebar plots every WSR-88D radar
+site (from the bundled station list in `src/radarStations.js`) as a dot on the
+map and reveals a small control at the top of the map. **Click a station dot**
+to load and draw its latest scan; clicking it again clears it. Only one
+station's data is shown at a time.
+
+### Where the data comes from
+
+Everything runs in the browser with no API key and no server of our own:
+
+1. When you select a station, the app finds that site's most recent volume in
+   Unidata's real-time chunk bucket on AWS S3
+   (`unidata-nexrad-level2-chunks`, public and CORS-enabled). The bucket
+   delivers each volume as sequentially numbered chunks
+   (`SITE/VOLUME/YYYYMMDD-HHMMSS-SEQ-{S,I,E}`). Volume numbers cycle 1→999, so
+   the newest volume is the one just before the largest gap in the retained
+   set, not the highest number.
+2. The chunks for that volume are downloaded and concatenated into a standard
+   Archive Level 2 stream (`AR2V…` header + bzip2-compressed radial records)
+   and parsed with the
+   [`nexrad-level-2-data`](https://github.com/netbymatt/nexrad-level-2-data)
+   library, which is loaded on demand as a separate bundle chunk.
+3. The lowest reflectivity tilt (or the lowest Doppler tilt for velocity) is
+   rendered to an image and draped over the map at the station's location.
+
+### Reflectivity vs. velocity
+
+The top-of-map control is a two-way toggle:
+
+- **Reflectivity** — precipitation intensity in dBZ, on the standard NWS color
+  ramp (blues → greens → yellows → reds → magenta).
+- **Velocity** — base radial velocity, colored **green for motion toward the
+  radar** (inbound) and **red for motion away** (outbound), with brightness
+  scaling with speed and near-zero shown grey. This is the classic velocity
+  presentation for spotting rotation and wind couplets.
+
+Switching products re-renders the already-downloaded volume, so it does not
+re-fetch. While a station stays selected its scan auto-refreshes every few
+minutes.
+
+### Rendering approach
+
+Radar data is polar (radials × range gates). Rather than draw a polygon per
+gate (over a million of them), `src/radarRender.js` reverse-maps each output
+pixel: a square image centered on the radar is filled by converting each
+pixel's offset to an azimuth and range, looking up the gate value, and applying
+the color ramp. The square is then placed on the map using geographic corners
+derived from the scan's maximum range, so it lines up with the ground near the
+station. Because the parser is a Node/CommonJS library that uses `Buffer`, the
+`buffer` package is bundled and installed on `globalThis` in `src/radar.js`,
+and Vite aliases `global` to `globalThis` (see `vite.config.js`).
+
 ## Weather warnings overlay
 
 Toggling **Weather warnings** in the sidebar fetches active alerts from the
@@ -189,6 +247,9 @@ street and place labels stay readable on top.
 | `index.html`     | Page markup and Vite entry point                    |
 | `src/main.js`    | Map initialization, controls, marker handling       |
 | `src/weatherWarnings.js` | Live NWS weather-warnings overlay (fetch + layers) |
+| `src/radar.js`   | NEXRAD Level 2 radar overlay (stations, fetch, product control) |
+| `src/radarRender.js` | Renders a polar radar sweep to an RGBA image + color ramps |
+| `src/radarStations.js` | Bundled WSR-88D station coordinates             |
 | `src/config.js`  | Mapbox token (env-driven) and map defaults          |
 | `src/styles.css` | Styling for the map and control panel               |
 | `vite.config.js` | Build configuration (relative base, output to dist) |

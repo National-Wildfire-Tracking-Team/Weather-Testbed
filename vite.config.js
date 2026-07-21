@@ -6,6 +6,13 @@ import { defineConfig } from "vite";
 // GitHub Pages subpath, so we emit relative URLs instead.
 export default defineConfig({
   base: "./",
+  define: {
+    // `nexrad-level-2-data` is a CommonJS module written for Node; it (and its
+    // `seek-bzip` dependency) references the `global` object, which does not
+    // exist in browsers. Alias it to `globalThis`. `Buffer` itself is polyfilled
+    // at runtime in src/radar.js via the bundled `buffer` package.
+    global: "globalThis",
+  },
   build: {
     outDir: "dist",
     sourcemap: true,
